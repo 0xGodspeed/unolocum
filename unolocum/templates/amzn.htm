@@ -1,0 +1,31 @@
+{% extends "layout.htm" %}
+{% block sheets%}
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='amzn.css') }}">
+{%endblock sheets%}
+{% block content %}
+  <form method="POST" action="">
+    {{ form.hidden_tag() }}
+    {{ form.url.label(class="form-control-label") }}
+      <div class="input-group mb-3">  
+        {{ form.url(class="form-control", autocomplete="off") }} 
+        <div class="input-group-append">
+          {{ form.submit(class="btn btn-outline-info") }}
+        </div>
+      </div>
+  </form>
+  
+  <div class="container">
+    <p>{{ error_text }}</p>
+  </div>
+ 
+  {% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }}">
+          {{ message }}
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+{% endblock content %}
+
