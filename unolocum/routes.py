@@ -1,9 +1,33 @@
 from flask import render_template, url_for, redirect, request, flash
-from unolocum.models import URL
+# from unolocum.models import URL
 from unolocum.amzn_form import UrlForm
-from unolocum import app, db
+from unolocum import app
 from bs4 import BeautifulSoup
 import requests
+from unolocum.sql import cur
+from mysql.connector import DatabaseError, ProgrammingError
+
+# conn=mysql.connector.connect(
+#         host="localhost",
+#         user="root",
+#         password="password",
+#         database="mysql"
+#         )
+# cur = conn.cursor()
+
+try:
+    cur.execute("CREATE DATABASE unolocum")
+    print("Database created")
+except DatabaseError:
+    print("Database already exists")
+
+try:
+    cur.execute("USE unolocum")
+    cur.execute("CREATE TABLE URL (id int AUTO_INCREMENT PRIMARY KEY, url VARCHAR(500) UNIQUE, name VARCHAR(100), price FLOAT)")
+    print("Table Created.")
+except ProgrammingError:
+    print("Table already exists")
+
 
 @app.route('/')
 @app.route('/home')
@@ -44,9 +68,12 @@ def amzn():
         pname = pname.strip()         #product name
         p_price = soup.find(id="priceblock_ourprice").get_text()     # price in string form
         c_p_price = float(p_price.replace(',', '')[2: ])             # price in float form
-        amzn_url = URL(url=url, name=pname, price=c_p_price)
-        db.session.add(amzn_url)
-        db.session.commit()
+        # amzn_url = URL(url=url, name=pname, price=c_p_price)
+        # db.session.add(amzn_url)
+        # db.session.commit()
+        cur.execute(f"INSERT INTO url (url, name, price) VALUES('{url}', '{pname}', {c_p_price})")
+        conn.commit()
         flash(f'Added.', 'success')
         return redirect('/amzn')
     return render_template('amzn.htm', title  = 'Amazon Tracking', form = form)
+    
