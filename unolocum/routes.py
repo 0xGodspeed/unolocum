@@ -7,9 +7,6 @@ from unolocum.sql import cur, conn
 from mysql.connector import DatabaseError, ProgrammingError
 from mysql.connector.errors import DataError
 
-amzn_redirects = 0
-change_in_price = 'none'
-
 try:
     cur.execute("CREATE DATABASE unolocum")
     print("Database created")
@@ -22,6 +19,17 @@ try:
     print("Table Created.")
 except ProgrammingError:
     print("Table already exists")
+
+# global variables
+amzn_redirects = 0
+change_in_price = 'none'
+cur.execute("SELECT id, name, price FROM URL")   
+table_data = cur.fetchall()
+for i in range(len(table_data)):
+    table_data[i] = list(table_data[i])
+    table_data[i][2] = str(table_data[i][2]) 
+table_headings = ('#', 'Product', 'Current Price') 
+print(table_data)
 
 
 def productinfo(url):
@@ -40,27 +48,38 @@ def productinfo(url):
     
 def update_prices():
     global change_in_price
-    cur.execute("SELECT url from URL")
+    cur.execute("SELECT url from URL ORDER BY id")
     urls = cur.fetchall()
-    for url in urls:        
+    print(urls)
+    url_count = 0
+    for url in urls: 
+        print(url_count)
         url = url[0]
         product_info = productinfo(url)
         c_p_price = product_info[2]              # current price
-        cur.execute("SELECT price FROM URL")
+        cur.execute(f"SELECT price FROM URL where url='{url}'")
         old_price = cur.fetchone()[0]
+        print(old_price)
+        print(type(old_price), type(c_p_price))
         if c_p_price != old_price:
-            if c_p_price >= old_price:
-                change_in_price = 'inc'
+            print(c_p_price)
+            if c_p_price > old_price:
+                print("increasing")
+                table_data[url_count][2] = str(c_p_price) + '▲'                 
                 cur.execute(f"UPDATE URL SET price={c_p_price} WHERE url='{url}'")
-            elif  c_p_price <= old_price:
-                change_in_price = 'dec'
+            elif c_p_price < old_price:
+                print("decreasing")
+                table_data[url_count][2] = str(c_p_price) + '▼'
                 cur.execute(f"UPDATE URL SET price={c_p_price} WHERE url='{url}'")
+        conn.commit()
+        url_count += 1
+    print(table_data)
 
 @app.route('/')
 @app.route('/home')
 def home():
-
     return render_template('home.htm')
+
 @app.route('/about')
 def about():
     return render_template('about.htm', title = 'About')
@@ -86,6 +105,8 @@ def returnf():
 @app.route('/amzn', methods=['GET', 'POST'])
 def amzn():
     global amzn_redirects
+    global table_data
+    global table_headings
     amzn_redirects += 1
     if amzn_redirects <= 1:
         update_prices()
@@ -107,9 +128,6 @@ def amzn():
         
         flash(f'Added.', 'success')
         return redirect('/amzn')
-    
-    
-    cur.execute("SELECT id, name, price FROM URL")   
-    table_data = cur.fetchall()
-    table_headings = ('#', 'Product', 'Current Price') 
+        
+
     return render_template('amzn.htm', title='Amazon Tracking', form=form, table_headings=table_headings, table_data=table_data, change_in_price=change_in_price)

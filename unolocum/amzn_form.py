@@ -5,11 +5,6 @@ from bs4 import BeautifulSoup
 from unolocum.sql import cur
 import requests
 
-# cur.execute("SELECT * FROM URL")
-# all_urls = cur.fetchall()
-
-all_urls = [(1,'abc', 100), (2, 'cde', 200)]
-
 class UrlForm(FlaskForm):
     url = StringField('Enter Amazon Product URL:', validators=[DataRequired()])   
     submit = SubmitField('Submit')
