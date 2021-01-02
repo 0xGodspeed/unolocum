@@ -5,3 +5,13 @@ label {
 form {
     padding-top : 8px; 
 }
+
+
+table {
+    background-color: #031321 !important; 
+    border-radius: 20px !important;
+}
+
+th {
+    background-color: #031321 !important; 
+}

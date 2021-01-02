@@ -17,7 +17,14 @@
   <div class="container">
     <p>{{ error_text }}</p>
   </div>
- 
+  
+  <div>
+    <table>
+    
+    </table>
+  </div>
+
+
   {% with messages = get_flashed_messages(with_categories=True) %}
     {% if messages %}
       {% for category, message in messages %}
@@ -27,5 +34,23 @@
       {% endfor %}
     {% endif %}
   {% endwith %}
+
+<table class="table table-dark table-bordered table-striped">
+  <thead class="thead-dark">
+  <tr>
+    {% for heading in table_headings %}
+      <th scope="col">{{ heading }}</th>
+    {% endfor %}
+  </tr>
+</thead>
+  {% for row in table_data %}
+  <tr scope="row">
+    {% for cell in row %}
+      <td>{{ cell }}</td>
+    {% endfor %}
+  </tr>
+  {% endfor %}
+</table>
+
 {% endblock content %}
 

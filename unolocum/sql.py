@@ -6,4 +6,4 @@ conn=mysql.connector.connect(
         password="password",
         database="mysql"
         )
-cur = conn.cursor()
+cur = conn.cursor(buffered=True)

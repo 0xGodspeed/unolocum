@@ -2,15 +2,21 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField
 from wtforms.validators import DataRequired, ValidationError
 from bs4 import BeautifulSoup
-# from unolocum.mysql import cur
+from unolocum.sql import cur
 import requests
 
-class UrlForm(FlaskForm):
-    url = StringField('Enter Amazon Product URL:', validators=[DataRequired()])    # product name
-    submit = SubmitField('Submit')
+# cur.execute("SELECT * FROM URL")
+# all_urls = cur.fetchall()
 
+all_urls = [(1,'abc', 100), (2, 'cde', 200)]
+
+class UrlForm(FlaskForm):
+    url = StringField('Enter Amazon Product URL:', validators=[DataRequired()])   
+    submit = SubmitField('Submit')
     def validate_url(self, url):
-        product = URL.query.filter_by(url=url.data).first()
+        # product = URL.query.filter_by(url=url.data).first()              # product name
+        
+        product = cur.execute(f"SELECT * FROM URL WHERE url='{url.data}' LIMIT 1")       
         print(product)
         if product != None:
             print('working')
