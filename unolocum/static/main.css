@@ -4,6 +4,38 @@ body {
   margin-top: 5rem;
 }
 
-h1, h2, h3, h4, h5, h6 {
+h2, h3, h4, h6 {
   color: #444444;
+}
+
+h5 {
+  color:white;
+  text-decoration: underline;
+}
+
+h1 {
+  color: white;
+  text-align: center;
+  font-size: 170px;
+  padding-top: 45px;
+  font-weight: 600;
+}
+
+.info {
+  padding-top: 30px;
+  color: rgb(223, 223, 223);
+  margin-left: 43px;
+  margin-right: 43px;
+}
+
+.createlist {
+  color: white;
+}
+
+.error_text {
+  color:#333333;
+}
+
+p {
+  color: white;s
 }

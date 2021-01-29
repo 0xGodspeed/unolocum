@@ -24,13 +24,21 @@ except ProgrammingError:
 amzn_redirects = 0
 change_in_price = 'none'
 cur.execute("SELECT id, name, price FROM URL")   
-table_data = cur.fetchall()
-for i in range(len(table_data)):
-    table_data[i] = list(table_data[i])
-    table_data[i][2] = str(table_data[i][2]) 
+table_data = []
+
 table_headings = ('#', 'Product', 'Current Price') 
 print(table_data)
 
+
+def TableData():
+    global table_data
+    cur.execute("SELECT id, name, price FROM URL")   
+    table_data = cur.fetchall()
+    for i in range(len(table_data)):
+        table_data[i] = list(table_data[i])
+        table_data[i][2] = str(table_data[i][2]) 
+
+TableData()
 
 def productinfo(url):
     headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' } 
@@ -48,6 +56,7 @@ def productinfo(url):
     
 def update_prices():
     global change_in_price
+    TableData()
     cur.execute("SELECT url from URL ORDER BY id")
     urls = cur.fetchall()
     print(urls)
@@ -65,15 +74,14 @@ def update_prices():
             print(c_p_price)
             if c_p_price > old_price:
                 print("increasing")
-                table_data[url_count][2] = str(c_p_price) + '▲'                 
+                table_data[url_count][2] = str(c_p_price) + ' ▲'                 
                 cur.execute(f"UPDATE URL SET price={c_p_price} WHERE url='{url}'")
             elif c_p_price < old_price:
                 print("decreasing")
-                table_data[url_count][2] = str(c_p_price) + '▼'
+                table_data[url_count][2] = str(c_p_price) + ' ▼'
                 cur.execute(f"UPDATE URL SET price={c_p_price} WHERE url='{url}'")
         conn.commit()
         url_count += 1
-    print(table_data)
 
 @app.route('/')
 @app.route('/home')
@@ -129,5 +137,10 @@ def amzn():
         flash(f'Added.', 'success')
         return redirect('/amzn')
         
-
     return render_template('amzn.htm', title='Amazon Tracking', form=form, table_headings=table_headings, table_data=table_data, change_in_price=change_in_price)
+
+
+@app.route('/nightsky')
+def nightsky():
+    
+    return render_template('nightsky.htm', title='Night Sky Info')
