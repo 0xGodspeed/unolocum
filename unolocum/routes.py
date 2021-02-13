@@ -4,21 +4,21 @@ from unolocum import app
 from bs4 import BeautifulSoup
 import requests
 from unolocum.sql import cur, conn
-from mysql.connector import DatabaseError, ProgrammingError
+# from mysql.connector import DatabaseError, ProgrammingError
 from mysql.connector.errors import DataError
 
-try:
-    cur.execute("CREATE DATABASE unolocum")
-    print("Database created")
-except DatabaseError:
-    print("Database already exists")
+# try:
+#     cur.execute("CREATE DATABASE unolocum")
+#     print("Database created")
+# except DatabaseError:
+#     print("Database already exists")
 
-try:
-    cur.execute("USE unolocum")
-    cur.execute("CREATE TABLE URL (id int AUTO_INCREMENT PRIMARY KEY, url VARCHAR(500) UNIQUE, name VARCHAR(100), price FLOAT)")
-    print("Table Created.")
-except ProgrammingError:
-    print("Table already exists")
+# try:
+#     cur.execute("USE unolocum")
+#     cur.execute("CREATE TABLE URL (id int AUTO_INCREMENT PRIMARY KEY, url VARCHAR(500) UNIQUE, name VARCHAR(100), price FLOAT)")
+#     print("Table Created.")
+# except ProgrammingError:
+#     print("Table already exists")
 
 # global variables
 amzn_redirects = 0
@@ -30,7 +30,7 @@ table_headings = ('#', 'Product', 'Current Price')
 print(table_data)
 
 
-def TableData():
+def TableData():                                                    # i think this updates prices
     global table_data
     cur.execute("SELECT id, name, price FROM URL")   
     table_data = cur.fetchall()
@@ -133,7 +133,7 @@ def amzn():
             print(pname)
             cur.execute(f"INSERT INTO URL (url, name, price) VALUES('{url}', '{pname}', {c_p_price})")
         conn.commit()
-        
+            
         flash(f'Added.', 'success')
         return redirect('/amzn')
         

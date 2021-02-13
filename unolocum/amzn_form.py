@@ -8,9 +8,7 @@ import requests
 class UrlForm(FlaskForm):
     url = StringField('Enter Amazon Product URL:', validators=[DataRequired()])   
     submit = SubmitField('Submit')
-    def validate_url(self, url):
-        # product = URL.query.filter_by(url=url.data).first()              # product name
-        
+    def validate_url(self, url):        
         product = cur.execute(f"SELECT * FROM URL WHERE url='{url.data}' LIMIT 1")       
         print(product)
         if product != None:
