@@ -1,3 +1,12 @@
-.sn {
-    display:inline;
+p {
+    color : rgba(255, 255, 255, 0.801) !important;
+}
+
+table {
+    background-color: #031321 !important; 
+    border-radius: 20px !important;
+}
+
+th {
+    background-color: #031321 !important; 
 }

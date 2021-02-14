@@ -1,7 +1,7 @@
 {% extends "layout.htm" %}
 {% block sheets%}
 <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='amzn.css') }}">
-{%endblock sheets%}
+{% endblock sheets %}
 {% block content %}
   <form method="POST" action="">
     {{ form.hidden_tag() }}

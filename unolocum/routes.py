@@ -5,6 +5,8 @@ from bs4 import BeautifulSoup
 import requests
 from unolocum.sql import cur, conn
 from mysql.connector.errors import DataError
+from datetime import datetime
+
 
 # global variables
 # amzn
@@ -19,6 +21,7 @@ print(amzn_table_data)
 hemis = "northern"
 ns_table_data = []
 ns_table_headings = ('#', 'Name', 'Direction', 'Image')
+current_month = datetime.now().strftime("%B")
 
 
 #------------------------------------------amazon functions-----------------------------------------------
@@ -78,7 +81,22 @@ def update_prices():                            # updates prices
         url_count += 1
 
 
-# ------------------------------------------routes------------------------------------------------------
+
+#---------------------------------------- nsinfo functions----------------------------------------------
+
+
+def NSTableData(hemis):
+    global ns_table_data
+    cur.execute('USE unolocum_space_objects')
+    cur.execute(f"SELECT Name, Direction from {hemis} WHERE Month='{current_month}'")
+    ns_table_data = cur.fetchall()
+    print(ns_table_data, f"SELECT Name, Direction from {hemis} WHERE Month='{current_month}'")
+    for i in range(len(ns_table_data)):
+        ns_table_data[i] = (i+1,) + ns_table_data[i]
+    print(ns_table_data)
+NSTableData(hemis)
+
+# -------------------------------------------routes----------------------------------------------------
 
 @app.route('/')
 @app.route('/home')
@@ -141,7 +159,8 @@ def nightsky():
     global hemis
     if request.method == 'POST':
         hemis = request.form['hemis']
-    
+        print(hemis)
+        NSTableData(hemis)
     
     return render_template('nightsky.htm', title='Night Sky Info', hemis=hemis, ns_table_data=ns_table_data, ns_table_headings=ns_table_headings)
 
