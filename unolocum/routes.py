@@ -29,6 +29,7 @@ current_month = datetime.now().strftime("%B")
 
 def AmazonTableData():                                           # reformats the table data into list so that its 
     global amzn_table_data                                            # more easily accessible 
+    cur.execute("USE unolocum")
     cur.execute("SELECT id, name, price FROM URL")   
     amzn_table_data = cur.fetchall()
     for i in range(len(amzn_table_data)):
@@ -54,6 +55,7 @@ def productinfo(url):                           # gets info of the product from 
 def update_prices():                            # updates prices
     global change_in_price
     AmazonTableData()
+    cur.execute("USE unolocum")
     cur.execute("SELECT url from URL ORDER BY id")
     urls = cur.fetchall()
     print(urls)
