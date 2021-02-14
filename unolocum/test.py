@@ -1,12 +1,5 @@
-import mysql.connector
-
-conn=mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="password",
-        database="unolocum"
-        )
-cur = conn.cursor()
-cur.execute("SELECT price from URL")
-urls = cur.fetchone()
-print(urls[0])
+a = 0
+def fun():
+    a=a+1
+    print(a)
+fun()

@@ -1,4 +1,40 @@
 {% extends "layout.htm" %}
 {% block content %}
 
+<p> Do you live in the Southern or Northern hemisphere? </p>
+
+<form method="POST" action="">  
+    <div class="input-group mb-3">  
+        <select name= "hemis" class="custom-select">
+            {% if hemis == "northern" %}
+                <option selected value="northern">Northern</option>
+                <option value="southern">Southern</option>
+            {% else %}
+                <option value="northern">Northern</option>
+                <option selected value="southern">Southern</option>
+            {% endif %} 
+            </select>
+        <div class="input-group-append">    
+            <input class="btn btn-outline-info" type="submit" value="Submit">
+        </div>
+    </div>
+</form>
+
+<table class="table table-dark table-bordered table-striped">
+    <thead class="thead-dark">
+    <tr>
+      {% for heading in ns_table_headings %}
+        <th scope="col">{{ heading }}</th>
+      {% endfor %}
+    </tr>
+  </thead>
+    {% for row in amzn_table_data %}
+    <tr scope="row">
+      {% for cell in row %}
+        <td>{{ cell }}</td>
+      {% endfor %}
+    </tr>
+    {% endfor %}
+  </table>
+
 {% endblock content %}

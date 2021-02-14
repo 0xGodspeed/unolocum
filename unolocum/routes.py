@@ -4,43 +4,37 @@ from unolocum import app
 from bs4 import BeautifulSoup
 import requests
 from unolocum.sql import cur, conn
-# from mysql.connector import DatabaseError, ProgrammingError
 from mysql.connector.errors import DataError
 
-# try:
-#     cur.execute("CREATE DATABASE unolocum")
-#     print("Database created")
-# except DatabaseError:
-#     print("Database already exists")
-
-# try:
-#     cur.execute("USE unolocum")
-#     cur.execute("CREATE TABLE URL (id int AUTO_INCREMENT PRIMARY KEY, url VARCHAR(500) UNIQUE, name VARCHAR(100), price FLOAT)")
-#     print("Table Created.")
-# except ProgrammingError:
-#     print("Table already exists")
-
 # global variables
+# amzn
 amzn_redirects = 0
 change_in_price = 'none'
+amzn_table_data = []
+amzn_table_headings = ('#', 'Product', 'Current Price') 
 cur.execute("SELECT id, name, price FROM URL")   
-table_data = []
+print(amzn_table_data)
 
-table_headings = ('#', 'Product', 'Current Price') 
-print(table_data)
+# nsinfo
+hemis = "northern"
+ns_table_data = []
+ns_table_headings = ('#', 'Name', 'Direction', 'Image')
 
 
-def TableData():                                                    # i think this updates prices
-    global table_data
+#------------------------------------------amazon functions-----------------------------------------------
+
+
+def AmazonTableData():                                           # reformats the table data into list so that its 
+    global amzn_table_data                                            # more easily accessible 
     cur.execute("SELECT id, name, price FROM URL")   
-    table_data = cur.fetchall()
-    for i in range(len(table_data)):
-        table_data[i] = list(table_data[i])
-        table_data[i][2] = str(table_data[i][2]) 
+    amzn_table_data = cur.fetchall()
+    for i in range(len(amzn_table_data)):
+        amzn_table_data[i] = list(amzn_table_data[i])
+        amzn_table_data[i][2] = str(amzn_table_data[i][2]) 
 
-TableData()
+AmazonTableData()
 
-def productinfo(url):
+def productinfo(url):                           # gets info of the product from the url
     headers = { 'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36' } 
     page = requests.get(url, headers = headers)
     soup = BeautifulSoup(page.content, 'html.parser')
@@ -54,9 +48,9 @@ def productinfo(url):
     c_p_price = float(p_price.replace(',', '')[2: ])             # price in float form
     return [url, pname, c_p_price]
     
-def update_prices():
+def update_prices():                            # updates prices
     global change_in_price
-    TableData()
+    AmazonTableData()
     cur.execute("SELECT url from URL ORDER BY id")
     urls = cur.fetchall()
     print(urls)
@@ -74,14 +68,17 @@ def update_prices():
             print(c_p_price)
             if c_p_price > old_price:
                 print("increasing")
-                table_data[url_count][2] = str(c_p_price) + ' ▲'                 
+                amzn_table_data[url_count][2] = str(c_p_price) + ' ▲'                 
                 cur.execute(f"UPDATE URL SET price={c_p_price} WHERE url='{url}'")
             elif c_p_price < old_price:
                 print("decreasing")
-                table_data[url_count][2] = str(c_p_price) + ' ▼'
+                amzn_table_data[url_count][2] = str(c_p_price) + ' ▼'
                 cur.execute(f"UPDATE URL SET price={c_p_price} WHERE url='{url}'")
         conn.commit()
         url_count += 1
+
+
+# ------------------------------------------routes------------------------------------------------------
 
 @app.route('/')
 @app.route('/home')
@@ -113,8 +110,6 @@ def returnf():
 @app.route('/amzn', methods=['GET', 'POST'])
 def amzn():
     global amzn_redirects
-    global table_data
-    global table_headings
     amzn_redirects += 1
     if amzn_redirects <= 1:
         update_prices()
@@ -135,12 +130,19 @@ def amzn():
         conn.commit()
             
         flash(f'Added.', 'success')
+        update_prices()
         return redirect('/amzn')
-        
-    return render_template('amzn.htm', title='Amazon Tracking', form=form, table_headings=table_headings, table_data=table_data, change_in_price=change_in_price)
+    print(amzn_table_data)
+    return render_template('amzn.htm', title='Amazon Tracking', form=form, amzn_table_headings=amzn_table_headings, amzn_table_data=amzn_table_data, change_in_price=change_in_price)
 
 
-@app.route('/nightsky')
+@app.route('/nightsky', methods = ['GET', 'POST'])
 def nightsky():
+    global hemis
+    if request.method == 'POST':
+        hemis = request.form['hemis']
     
-    return render_template('nightsky.htm', title='Night Sky Info')
+    
+    return render_template('nightsky.htm', title='Night Sky Info', hemis=hemis, ns_table_data=ns_table_data, ns_table_headings=ns_table_headings)
+
+
