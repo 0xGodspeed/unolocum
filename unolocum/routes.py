@@ -89,13 +89,16 @@ def update_prices():                            # updates prices
 
 def NSTableData(hemis):
     global ns_table_data
+    ns_table_images = []
     cur.execute('USE unolocum_space_objects')
     cur.execute(f"SELECT Name, Direction from {hemis} WHERE Month='{current_month}'")
     ns_table_data = cur.fetchall()
-    print(ns_table_data, f"SELECT Name, Direction from {hemis} WHERE Month='{current_month}'")
     for i in range(len(ns_table_data)):
         ns_table_data[i] = (i+1,) + ns_table_data[i]
+        ns_table_images.append(f"http://www.allthesky.com/constellations/big/{ns_table_data[i][1].lower()}28vm-b.jpg")
     print(ns_table_data)
+    print(ns_table_images)
+    ns_table_data = zip(ns_table_data, ns_table_images)
 NSTableData(hemis)
 
 # -------------------------------------------routes----------------------------------------------------

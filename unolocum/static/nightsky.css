@@ -10,3 +10,8 @@ table {
 th {
     background-color: #031321 !important; 
 }
+
+.image {
+    height: 300px ;
+    width: 300px;
+}
