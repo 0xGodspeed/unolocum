@@ -1,4 +1,8 @@
 # unolocum
+
+incomplete and abondoned for now
+
+---
 ## Instructions:
 1. Install mysql server.
 2. Run `pip install -r requirements.txt` to install all the python dependencies
